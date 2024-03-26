@@ -54,6 +54,8 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
       hash: "final-html",
     });
 
+    const { onBuildEndPlugin, onBuildEnd } = captureBuildEnd();
+
     const combinedConfig = {
       ...esbuildConfig,
       stdin: {
@@ -68,12 +70,17 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
       bundle: true,
       format: "iife",
       logLevel: "info",
-      plugins: [...(esbuildConfig?.plugins ?? []), createOutputCapturePlugin(workingDir, buildFilesMap, staticContent)],
+      plugins: [
+        ...(esbuildConfig?.plugins ?? []),
+        createOutputCapturePlugin(workingDir, buildFilesMap, staticContent),
+        onBuildEndPlugin,
+      ],
     } satisfies esbuild.BuildOptions;
 
     if (keepOpen) {
       const buildContext = await esbuild.context(combinedConfig);
       await buildContext.watch();
+      await onBuildEnd;
     } else {
       await esbuild.build(combinedConfig);
     }
@@ -148,6 +155,25 @@ function createOutputCapturePlugin(
       });
     },
   };
+}
+
+function captureBuildEnd() {
+  const { promise: onBuildEnd, resolve } = deferredPromise();
+  const onBuildEndPlugin: esbuild.Plugin = {
+    name: "on-build-end",
+    setup: (build) => build.onEnd(resolve),
+  };
+  return { onBuildEndPlugin, onBuildEnd };
+}
+
+function deferredPromise<T = unknown>() {
+  let resolve: (value: T) => void;
+  let reject: (reason: unknown) => void;
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve;
+    reject = _reject;
+  });
+  return { promise, resolve: resolve!, reject: reject! };
 }
 
 function createDevMiddleware(buildFilesMap: Map<string, esbuild.OutputFile>): express.RequestHandler {
