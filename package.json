@@ -33,7 +33,7 @@
     "express": "^4.19.2",
     "find-up": "^7.0.0",
     "glob": "^10.3.12",
-    "mime": "^4.0.2",
+    "mime": "^4.0.3",
     "playwright-core": "^1.43.1"
   },
   "devDependencies": {
