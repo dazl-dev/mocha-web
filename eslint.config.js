@@ -17,7 +17,7 @@ export default [
 
   {
     rules: {
-      // "no-console": "error",
+      "no-only-tests/no-only-tests": "error",
     },
   },
 ];
