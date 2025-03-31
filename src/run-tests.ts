@@ -90,10 +90,7 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
     app.use("/mocha", express.static(mochaPath));
     app.use(express.static(workingDir));
 
-    const { httpServer, port } = await safeListeningHttpServer(
-      preferredPort,
-      app as (request: import("http").IncomingMessage, response: import("http").ServerResponse) => void,
-    );
+    const { httpServer, port } = await safeListeningHttpServer(preferredPort, app as import("http").RequestListener);
     closables.push(async () => {
       httpServer.close();
       await once(httpServer, "close");
