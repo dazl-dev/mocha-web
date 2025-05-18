@@ -145,4 +145,12 @@ describe("mocha-web", function () {
     expect(output).to.include("9 passing");
     expect(status).to.equal(0);
   });
+
+  it("includes tests.css if built by compilation", () => {
+    const { output, status } = runMochaPlay({ args: ["./imports-css.js"] });
+
+    expect(output).to.include("Found 1 test files");
+    expect(output, output).to.include("body background-color: rgb(0, 255, 0)");
+    expect(status).to.equal(0);
+  });
 });
