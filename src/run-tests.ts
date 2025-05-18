@@ -36,23 +36,6 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
     const buildFilesMap = new Map<string, esbuild.OutputFile>();
 
     const indexContents = testFiles.map((f) => `require(${JSON.stringify(f)});`).join("\n");
-    const testsHTML = createTestsHTML(
-      "mocha tests",
-      options.ui ?? "bdd",
-      options.colors ?? true,
-      options.reporter ?? "spec",
-      options.timeout ?? 2000,
-      options.grep,
-      options.iterate ?? 1,
-    );
-
-    const staticContent = new Map<string, esbuild.OutputFile>();
-    staticContent.set("/tests.html", {
-      path: path.join(workingDir, "tests.html"),
-      contents: Buffer.from(testsHTML),
-      text: testsHTML,
-      hash: "final-html",
-    });
 
     const { onBuildEndPlugin, onBuildEnd } = captureBuildEnd();
 
@@ -72,7 +55,7 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
       logLevel: "info",
       plugins: [
         ...(esbuildConfig?.plugins ?? []),
-        createOutputCapturePlugin(workingDir, buildFilesMap, staticContent),
+        createOutputCapturePlugin(workingDir, buildFilesMap, options),
         onBuildEndPlugin,
       ],
     } satisfies esbuild.BuildOptions;
@@ -137,7 +120,7 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
 function createOutputCapturePlugin(
   workingDir: string,
   buildFilesMap: Map<string, esbuild.OutputFile>,
-  staticContent: Map<string, esbuild.OutputFile>,
+  options: IRunTestsOptions,
 ): esbuild.Plugin {
   return {
     name: "capture-output",
@@ -145,12 +128,25 @@ function createOutputCapturePlugin(
       build.onEnd(({ outputFiles, errors }) => {
         if (outputFiles && outputFiles.length && !errors.length) {
           buildFilesMap.clear();
-          for (const [key, value] of staticContent) {
-            buildFilesMap.set(key, value);
-          }
           for (const outFile of outputFiles) {
             buildFilesMap.set("/" + path.relative(workingDir, outFile.path).replace("/\\/g", "/"), outFile);
           }
+          const testsHTML = createTestsHTML(
+            "mocha tests",
+            options.ui ?? "bdd",
+            options.colors ?? true,
+            options.reporter ?? "spec",
+            options.timeout ?? 2000,
+            options.grep,
+            options.iterate ?? 1,
+            buildFilesMap.has("/tests.css") ? "tests.css" : undefined,
+          );
+          buildFilesMap.set("/tests.html", {
+            path: path.join(workingDir, "tests.html"),
+            contents: Buffer.from(testsHTML),
+            text: testsHTML,
+            hash: "final-html",
+          });
         }
       });
     },
@@ -206,13 +202,16 @@ function createTestsHTML(
   timeout: number,
   grep: string | undefined,
   iterate: number | undefined,
+  cssFileName: string | undefined,
 ) {
   return `<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
     <title>${title}</title>
-    <link rel="stylesheet" href="mocha/mocha.css" />
+    <link rel="stylesheet" href="mocha/mocha.css" />${
+      cssFileName ? `\n    <link rel="stylesheet" href="${cssFileName}" />` : ""
+    }
     <script src="mocha/mocha.js"></script>
   </head>
   <body>
