@@ -70,7 +70,7 @@ describe("mocha-web", function () {
     expect(status).to.equal(0);
   });
 
-  it("automatically finds and uses webpack.config.mjs", () => {
+  it("automatically finds and uses esbuild.config.mjs", () => {
     const { output, status } = runMochaPlay({
       args: ["./typescript-file.ts"],
       fixture: "with-mjs-config",
