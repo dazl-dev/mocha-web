@@ -1,6 +1,5 @@
 # mocha-web
 
-[![Build Status](https://github.com/wixplosives/mocha-web/workflows/tests/badge.svg)](https://github.com/wixplosives/mocha-web/actions)
 [![npm version](https://img.shields.io/npm/v/mocha-web.svg)](https://www.npmjs.com/package/mocha-web)
 
 Run mocha tests in chromium, using esbuild and playwright.
