@@ -38,7 +38,7 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
     const indexContents = testFiles.map((f) => `require(${JSON.stringify(f)});`).join("\n");
 
     const { onBuildEndPlugin, onBuildEnd } = captureBuildEnd();
-
+    const format = esbuildConfig?.format ?? "iife";
     const combinedConfig = {
       ...esbuildConfig,
       stdin: {
@@ -51,11 +51,11 @@ export async function runTests(testFiles: string[], options: IRunTestsOptions = 
       write: false,
       sourcemap: true,
       bundle: true,
-      format: "iife",
+      format,
       logLevel: "info",
       plugins: [
         ...(esbuildConfig?.plugins ?? []),
-        createOutputCapturePlugin(workingDir, buildFilesMap, options),
+        createOutputCapturePlugin(workingDir, buildFilesMap, options, format),
         onBuildEndPlugin,
       ],
     } satisfies esbuild.BuildOptions;
@@ -121,6 +121,7 @@ function createOutputCapturePlugin(
   workingDir: string,
   buildFilesMap: Map<string, esbuild.OutputFile>,
   options: IRunTestsOptions,
+  format: esbuild.Format,
 ): esbuild.Plugin {
   return {
     name: "capture-output",
@@ -132,6 +133,7 @@ function createOutputCapturePlugin(
             buildFilesMap.set("/" + path.relative(workingDir, outFile.path).replace("/\\/g", "/"), outFile);
           }
           const testsHTML = createTestsHTML(
+            format,
             "mocha tests",
             options.ui ?? "bdd",
             options.colors ?? true,
@@ -195,6 +197,7 @@ async function waitForTestResults(page: playwright.Page): Promise<number> {
 }
 
 function createTestsHTML(
+  format: esbuild.Format,
   title: string,
   ui: string,
   color: boolean,
@@ -253,7 +256,7 @@ function createTestsHTML(
             .on('end', () => {(mochaStatus.finished = true)});
       });
     </script>
-    <script src="tests.js"></script>
+    ${format === "esm" ? `<script type="module" src="tests.js"></script>` : `<script src="tests.js"></script>`}
   </body>
 </html>
 `;

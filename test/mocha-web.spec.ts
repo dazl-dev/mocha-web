@@ -153,4 +153,15 @@ describe("mocha-web", function () {
     expect(output, output).to.include("body background-color: rgb(0, 255, 0)");
     expect(status).to.equal(0);
   });
+
+  it("supports esm syntax when esbuild config specifies format=esm", () => {
+    const { output, status } = runMochaPlay({
+      args: ["./with-import-meta.ts"],
+      fixture: "with-esm-esbuild-config",
+    });
+
+    expect(output).to.include("Found 1 test files");
+    expect(output).to.include("1 passing");
+    expect(status).to.equal(0);
+  });
 });
