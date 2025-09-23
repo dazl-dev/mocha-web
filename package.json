@@ -34,10 +34,10 @@
     "find-up": "^8.0.0",
     "glob": "^11.0.3",
     "mime": "^4.1.0",
-    "playwright-core": "^1.55.0"
+    "playwright-core": "^1.55.1"
   },
   "devDependencies": {
-    "@playwright/browser-chromium": "^1.55.0",
+    "@playwright/browser-chromium": "^1.55.1",
     "@types/chai": "^5.2.2",
     "@types/express": "^5.0.3",
     "@types/mocha": "^10.0.10",
