@@ -3,11 +3,11 @@
 import pluginJs from "@eslint/js";
 import configPrettier from "eslint-config-prettier";
 import pluginNoOnlyTests from "eslint-plugin-no-only-tests";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import pluginTypescript from "typescript-eslint";
 
 export default defineConfig([
-  { ignores: ["dist/", "test/fixtures/broken-syntax.js"] },
+  globalIgnores(["dist/", "test/fixtures/broken-syntax.js"]),
   pluginJs.configs.recommended,
   { plugins: { "no-only-tests": pluginNoOnlyTests } },
   {
