@@ -34,10 +34,10 @@
     "find-up": "^8.0.0",
     "glob": "^13.0.1",
     "mime": "^4.1.0",
-    "playwright-core": "^1.58.1"
+    "playwright-core": "^1.58.2"
   },
   "devDependencies": {
-    "@playwright/browser-chromium": "^1.58.1",
+    "@playwright/browser-chromium": "^1.58.2",
     "@types/chai": "^5.2.3",
     "@types/express": "^5.0.6",
     "@types/mocha": "^10.0.10",
@@ -47,7 +47,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-no-only-tests": "^3.3.0",
-    "mocha": "^12.0.0-beta-6",
+    "mocha": "^12.0.0-beta-8",
     "prettier": "^3.8.1",
     "rimraf": "^6.1.2",
     "typescript": "~5.9.3",
