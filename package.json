@@ -28,7 +28,7 @@
     "mocha": ">=7 || >=12.0.0-beta"
   },
   "dependencies": {
-    "commander": "^14.0.3",
+    "commander": "^15.0.0",
     "create-listening-server": "^2.1.0",
     "express": "^5.2.1",
     "find-up": "^8.0.0",
