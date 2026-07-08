@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment */
 import { Command } from "commander";
 import esbuild from "esbuild";
 import { findUpSync } from "find-up";
